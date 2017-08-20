@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
+import java.math.BigDecimal;
 import java.util.Set;
 
 /**
@@ -21,5 +22,9 @@ public class Performer extends User {
 
     public Performer(String username, String password) {
         super(username, password);
+    }
+
+    public Performer(String username, String password, BigDecimal money) {
+        super(username, password, money);
     }
 }

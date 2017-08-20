@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -22,12 +23,20 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private BigDecimal money;
+
     public User() {
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = passwordEncoder.encode(password);
+    }
+
+    public User(String username, String password, BigDecimal money) {
+        this(username, password);
+        this.money = money;
     }
 
     @JsonIgnore
@@ -74,5 +83,13 @@ public class User extends BaseEntity implements UserDetails {
     @JsonIgnore
     public boolean isEnabled() {
         return true;
+    }
+
+    public BigDecimal getMoney() {
+        return money;
+    }
+
+    public void setMoney(BigDecimal money) {
+        this.money = money;
     }
 }

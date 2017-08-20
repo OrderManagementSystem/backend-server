@@ -1,7 +1,6 @@
 package com.vk.oms.controller;
 
 import com.vk.oms.controller.exceptions.BadRequestException;
-import com.vk.oms.controller.exceptions.ResourceNotFoundException;
 import com.vk.oms.model.Customer;
 import com.vk.oms.model.Order;
 import com.vk.oms.model.Performer;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import static com.vk.oms.util.ControllerUtils.assertFound;
 
 @RestController
 public class OrderController {
@@ -46,7 +47,7 @@ public class OrderController {
      * Возвращает список всех заказов заказчика с указанным id. Метод доступен только этому заказчику.
      */
     @GetMapping("/customer/{id:\\d+}/orders")
-//    @PreAuthorize("hasRole('CUSTOMER') and #customer == loggedUser")
+    @PreAuthorize("hasRole('CUSTOMER') and #customer == loggedUser")
     public List<Order> getCustomerOrders(@PathVariable("id") Customer customer,
                                          @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
         assertFound(customer);
@@ -58,8 +59,8 @@ public class OrderController {
     /**
      * Возвращает список всех заказов исполнителя с указанным id. Метод доступен только этому исполнителю.
      */
-    @GetMapping("/performer/{id:\\d+}/orders")
-//    @PreAuthorize("hasRole('PERFORMER') and #performer == loggedUser")
+    @GetMapping("/performers/{id:\\d+}/orders")
+    @PreAuthorize("hasRole('PERFORMER') and #performer == loggedUser")
     public List<Order> getPerformerOrders(@PathVariable("id") Performer performer,
                                           @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
         assertFound(performer);
@@ -72,7 +73,7 @@ public class OrderController {
      * Создает новый заказ с указанным описание и стоимостью заказа. Метод доступен только заказчикам.
      */
     @PostMapping("/orders")
-//    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.CREATED)
     public Order publishOrder(@RequestBody OrderDto orderDto) {
         return orderRepository.save(new Order(
@@ -82,7 +83,7 @@ public class OrderController {
     /**
      * Метод взятия заказа. Изменяет статус заказа с WAITING на IN_PROGRESS.
      */
-//    @PreAuthorize("hasRole('PERFORMER')")
+    @PreAuthorize("hasRole('PERFORMER')")
     @PatchMapping("/orders/{id:\\d+}/take")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void takeOrder(@PathVariable("id") Order order) {
@@ -103,7 +104,7 @@ public class OrderController {
      */
     @PatchMapping("/orders/{id:\\d+}/pass")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @PreAuthorize("hasRole('PERFORMER') and #order?.performer == loggedUser")
+    @PreAuthorize("hasRole('PERFORMER') and #order?.performer == loggedUser")
     public void pass(@PathVariable("id") Order order) {
         assertFound(order);
 
@@ -122,24 +123,17 @@ public class OrderController {
      */
     @PatchMapping("/orders/{id:\\d+}/accept")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @PreAuthorize("hasRole('CUSTOMER') and #order?.customer == loggedUser")
+    @PreAuthorize("hasRole('CUSTOMER') and #order?.customer == loggedUser")
     public void accept(@PathVariable("id") Order order) {
         assertFound(order);
 
         try {
             order.accept();
-            // todo: перевести деньги. если недостаточно средств - принять заказ невозможно
         } catch (IllegalStateException e) {
             throw new BadRequestException(e);
         }
 
         orderRepository.save(order);
-    }
-
-    private void assertFound(Object object) {
-        if (object == null) {
-            throw new ResourceNotFoundException();
-        }
     }
 
     private class OrderDto {

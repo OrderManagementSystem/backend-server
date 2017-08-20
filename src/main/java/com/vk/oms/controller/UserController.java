@@ -5,8 +5,10 @@ import com.vk.oms.model.Customer;
 import com.vk.oms.model.Performer;
 import com.vk.oms.model.User;
 import com.vk.oms.repository.UserRepository;
+import com.vk.oms.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -17,6 +19,11 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @PreAuthorize("isAuthenticated()")
+    public User getLoggedUser() {
+        return SecurityUtils.getLoggedUser();
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: development
+
   main:
     banner-mode: "off"
 

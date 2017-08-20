@@ -1,7 +1,9 @@
 package com.vk.oms.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.vk.oms.util.MoneyService;
+import com.vk.oms.util.OrderSerializer;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,6 +15,7 @@ import java.time.ZoneId;
  */
 @Entity
 @Table(name = "`order`")
+@JsonSerialize(using = OrderSerializer.class)
 public class Order extends BaseEntity {
 
     @ManyToOne(optional = false)
@@ -29,7 +32,6 @@ public class Order extends BaseEntity {
     private LocalDateTime createdDate;
 
     @Enumerated
-    @JsonProperty
     private Status status = Status.WAITING;
 
     public Order() {
@@ -64,6 +66,10 @@ public class Order extends BaseEntity {
 
     public LocalDateTime getCreatedDate() {
         return createdDate;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     @JsonIgnore
@@ -111,6 +117,7 @@ public class Order extends BaseEntity {
                     String.format("Order must be ready state to pay for it! Current state: %s", status));
         }
 
+        MoneyService.transferMoney(customer, performer, price);
         this.status = Status.COMPLETED;
     }
 
