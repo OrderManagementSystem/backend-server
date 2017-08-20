@@ -3,11 +3,10 @@ package com.vk.oms.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Заказ
@@ -25,6 +24,9 @@ public class Order extends BaseEntity {
     private String description;
 
     private BigDecimal price;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate;
 
     @Enumerated
     @JsonProperty
@@ -53,6 +55,15 @@ public class Order extends BaseEntity {
 
     public BigDecimal getPrice() {
         return price;
+    }
+
+    @PrePersist
+    private void setCreatedDate() {
+        createdDate = LocalDateTime.now(ZoneId.of("UTC"));
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
     @JsonIgnore

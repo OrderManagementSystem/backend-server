@@ -2,11 +2,10 @@ package com.vk.oms.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.domain.Persistable;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
 /**
@@ -19,10 +18,6 @@ public abstract class BaseEntity implements Persistable<Long> {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, updatable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createdDate;
-
     @Override
     public Long getId() {
         return id;
@@ -30,15 +25,6 @@ public abstract class BaseEntity implements Persistable<Long> {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @PrePersist
-    private void setCreatedDate() {
-        createdDate = LocalDateTime.now(ZoneId.of("UTC"));
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
     }
 
     @Override
