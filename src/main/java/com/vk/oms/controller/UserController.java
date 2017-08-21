@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
+    @GetMapping("/authenticated")
     @PreAuthorize("isAuthenticated()")
     public User getLoggedUser() {
         return SecurityUtils.getLoggedUser();
     }
 
-    @PostMapping
+    @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public User registerUser(@RequestBody UserRegistration registration) {
         if (userRepository.findByUsername(registration.username) != null) {
