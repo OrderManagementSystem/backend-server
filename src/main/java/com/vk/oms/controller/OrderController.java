@@ -37,7 +37,8 @@ public class OrderController {
      * Возвращает список новых (со статусом IN_PROGRESS) заказов, отсортированный по дате добавления, от новых к старым
      */
     @GetMapping("/orders")
-    public List<Order> getOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
+    @PreAuthorize("hasRole('PERFORMER')")
+    public List<Order> getNewOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
         return orderRepository
                 .findAll((root, query, cb) -> cb.equal(root.get("status"), Order.Status.WAITING), pageable)
                 .getContent();
