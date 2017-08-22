@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
+import java.math.BigDecimal;
 
 @RestController
 public class UserController {
@@ -33,22 +33,25 @@ public class UserController {
                     "User '%s' already exists", registration.username));
         }
 
-        if (!Objects.equals(registration.password, registration.passwordConfirmation)) {
-            throw new BadRequestException("Passwords must match");
+        User user;
+        switch (registration.userType) {
+            case "Performer":
+                user = new Performer(registration.username, registration.password, new BigDecimal(300));
+                break;
+            case "Customer":
+                user = new Customer(registration.username, registration.password, new BigDecimal(500));
+                break;
+            default:
+                throw new BadRequestException(String.format("Unknown user type: %s", registration.userType));
         }
-
-        User user = registration.isCustomer
-                ? new Customer(registration.username, registration.password)
-                : new Performer(registration.username, registration.password);
 
         return userRepository.save(user);
     }
 
-    private class UserRegistration {
+    public static class UserRegistration {
 
         public String username;
         public String password;
-        public String passwordConfirmation;
-        public boolean isCustomer;
+        public String userType;
     }
 }
