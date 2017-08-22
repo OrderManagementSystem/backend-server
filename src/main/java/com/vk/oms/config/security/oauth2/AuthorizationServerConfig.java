@@ -37,7 +37,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory().withClient("client")
-                .authorizedGrantTypes("client_credentials", "password")
+                .authorizedGrantTypes("password", "refresh_token")
                 .authorities(Customer.class.getSimpleName(), Performer.class.getSimpleName())
                 .scopes("read", "write", "trust")
                 .resourceIds("oauth2-resource")
