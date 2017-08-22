@@ -92,4 +92,8 @@ public class User extends BaseEntity implements UserDetails {
     public void setMoney(BigDecimal money) {
         this.money = money;
     }
+
+    public final String getType() {
+        return getClass().getSimpleName();
+    }
 }
