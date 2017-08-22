@@ -7,6 +7,7 @@ import com.vk.oms.model.Performer;
 import com.vk.oms.repository.OrderRepository;
 import com.vk.oms.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -38,10 +39,9 @@ public class OrderController {
      */
     @GetMapping("/orders")
     @PreAuthorize("hasRole('PERFORMER')")
-    public List<Order> getNewOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
+    public Page<Order> getNewOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
         return orderRepository
-                .findAll((root, query, cb) -> cb.equal(root.get("status"), Order.Status.WAITING), pageable)
-                .getContent();
+                .findAll((root, query, cb) -> cb.equal(root.get("status"), Order.Status.WAITING), pageable);
     }
 
     /**
@@ -49,12 +49,11 @@ public class OrderController {
      */
     @GetMapping("/customer/{id:\\d+}/orders")
     @PreAuthorize("hasRole('CUSTOMER') and #customer == loggedUser")
-    public List<Order> getCustomerOrders(@PathVariable("id") Customer customer,
+    public Page<Order> getCustomerOrders(@PathVariable("id") Customer customer,
                                          @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
         assertFound(customer);
         return orderRepository
-                .findAll((root, query, cb) -> cb.equal(root.get("customer"), customer), pageable)
-                .getContent();
+                .findAll((root, query, cb) -> cb.equal(root.get("customer"), customer), pageable);
     }
 
     /**
@@ -62,12 +61,11 @@ public class OrderController {
      */
     @GetMapping("/performers/{id:\\d+}/orders")
     @PreAuthorize("hasRole('PERFORMER') and #performer == loggedUser")
-    public List<Order> getPerformerOrders(@PathVariable("id") Performer performer,
+    public Page<Order> getPerformerOrders(@PathVariable("id") Performer performer,
                                           @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
         assertFound(performer);
         return orderRepository
-                .findAll((root, query, cb) -> cb.equal(root.get("performer"), performer), pageable)
-                .getContent();
+                .findAll((root, query, cb) -> cb.equal(root.get("performer"), performer), pageable);
     }
 
     /**
