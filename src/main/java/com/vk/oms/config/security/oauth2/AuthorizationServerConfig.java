@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -32,6 +33,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.authenticationManager(authenticationManager);
+        endpoints.userDetailsService(userDetailsService());
     }
 
     @Override
@@ -54,13 +56,18 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public DaoAuthenticationProvider getAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(User.passwordEncoder);
-        provider.setUserDetailsService(username -> Optional.ofNullable(userRepository.findByUsername(username))
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found!", username))));
+        provider.setUserDetailsService(userDetailsService());
         return provider;
     }
 
     @Autowired
     public void authenticationManager(AuthenticationManagerBuilder builder) {
         builder.authenticationProvider(getAuthenticationProvider());
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> Optional.ofNullable(userRepository.findByUsername(username))
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found!", username)));
     }
 }
