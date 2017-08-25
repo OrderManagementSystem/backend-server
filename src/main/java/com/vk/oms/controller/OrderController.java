@@ -4,6 +4,7 @@ import com.vk.oms.controller.exceptions.BadRequestException;
 import com.vk.oms.model.Customer;
 import com.vk.oms.model.Order;
 import com.vk.oms.model.Performer;
+import com.vk.oms.model.User;
 import com.vk.oms.repository.OrderRepository;
 import com.vk.oms.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,33 +40,21 @@ public class OrderController {
      */
     @GetMapping("/orders")
     @PreAuthorize("hasRole('PERFORMER')")
-    public Page<Order> getNewOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
+    public List<Order> getNewOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
         return orderRepository
-                .findAll((root, query, cb) -> cb.equal(root.get("status"), Order.Status.WAITING), pageable);
+                .findAll((root, query, cb) -> cb.equal(root.get("status"), Order.Status.WAITING), pageable)
+                .getContent();
     }
 
-    /**
-     * Возвращает список всех заказов заказчика с указанным id. Метод доступен только этому заказчику.
-     */
-    @GetMapping("/customer/{id:\\d+}/orders")
-    @PreAuthorize("hasRole('CUSTOMER') and #customer == loggedUser")
-    public Page<Order> getCustomerOrders(@PathVariable("id") Customer customer,
-                                         @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
-        assertFound(customer);
-        return orderRepository
-                .findAll((root, query, cb) -> cb.equal(root.get("customer"), customer), pageable);
-    }
-
-    /**
-     * Возвращает список всех заказов исполнителя с указанным id. Метод доступен только этому исполнителю.
-     */
-    @GetMapping("/performers/{id:\\d+}/orders")
-    @PreAuthorize("hasRole('PERFORMER') and #performer == loggedUser")
-    public Page<Order> getPerformerOrders(@PathVariable("id") Performer performer,
-                                          @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
-        assertFound(performer);
-        return orderRepository
-                .findAll((root, query, cb) -> cb.equal(root.get("performer"), performer), pageable);
+    @GetMapping("/users/{id:\\d+}/orders")
+    @PreAuthorize("hasRole('CUSTOMER') and #user == loggedUser or hasRole('PERFORMER') and #user == loggedUser")
+    public List<Order> getUserOrders(@PathVariable("id") User user,
+                                     @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
+        assertFound(user);
+        Page<Order> page = (user instanceof Customer)
+                ? orderRepository.findByCustomer((Customer) user, pageable)
+                : orderRepository.findByPerformer((Performer) user, pageable);
+        return page.getContent();
     }
 
     /**
