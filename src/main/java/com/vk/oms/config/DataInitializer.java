@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @Profile("development")
@@ -44,42 +45,60 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Customer customer1 = new Customer("Jon Snow", "pass", BigDecimal.valueOf(1_000));
-        Customer customer2 = new Customer("Daenerys Targaryen", "pass", BigDecimal.valueOf(1_000));
-        Customer customer3 = new Customer("Catelyn Stark", "pass", BigDecimal.valueOf(1_000));
-        Customer customer4 = new Customer("Cersei Lannister", "pass", BigDecimal.valueOf(1_000_000));
-        Customer customer5 = new Customer("Meera Reed", "pass", BigDecimal.valueOf(500));
-        Customer customer6 = new Customer("Tycho Nestoris", "pass", BigDecimal.valueOf(1_000_000));
+        Random random = new Random();
 
-        Performer performer1 = new Performer("Brienne of Tarth", "pass", BigDecimal.valueOf(500));
-        Performer performer2 = new Performer("Tyrion Lannister", "pass", BigDecimal.valueOf(500));
-        Performer performer3 = new Performer("Sansa Stark", "pass", BigDecimal.valueOf(500));
+        List<Customer> customers = Arrays.asList(
+                new Customer("Jon Snow", "pass", BigDecimal.valueOf(15_000)),
+                new Customer("Daenerys Targaryen", "pass", BigDecimal.valueOf(17_000)),
+                new Customer("Catelyn Stark", "pass", BigDecimal.valueOf(20_000)),
+                new Customer("Cersei Lannister", "pass", BigDecimal.valueOf(1_000_000)),
+                new Customer("Meera Reed", "pass", BigDecimal.valueOf(500_000)),
+                new Customer("Tycho Nestoris", "pass", BigDecimal.valueOf(1_000_000)));
 
-        Order order1 = new Order(customer3, "Protect Sansa and Arya Stark", BigDecimal.valueOf(1000));
-        Order order2 = new Order(customer2, "Serve the true queen", BigDecimal.valueOf(100.25));
-        Order order3 = new Order(customer1, "Rule the Winterfell", BigDecimal.valueOf(100));
-        Order order4 = new Order(customer4, "Kill the dragons", BigDecimal.valueOf(1_000));
-        Order order5 = new Order(customer1, "Protect the Westeros from the Night King", BigDecimal.valueOf(500));
-        Order order6 = new Order(customer5, "Hold the door", BigDecimal.valueOf(500));
-        Order order7 = new Order(customer2, "Kill the Cersei", BigDecimal.valueOf(500));
-        Order order8 = new Order(customer6, "Pay off a debt to the Iron Bank of Braavos", BigDecimal.valueOf(500_000));
-        Order order9 = new Order(customer2, "Recover from the Greyscale", BigDecimal.valueOf(200));
-        Order order10 = new Order(customer2, "Serve the true queen", BigDecimal.valueOf(100.25));
-        Order order11 = new Order(customer1, "Become the Meister", BigDecimal.valueOf(100));
+        List<Performer> performers = Arrays.asList(
+                new Performer("Brienne of Tarth", "pass", BigDecimal.valueOf(500)),
+                new Performer("Tyrion Lannister", "pass", BigDecimal.valueOf(500)),
+                new Performer("Sansa Stark", "pass", BigDecimal.valueOf(500)));
 
-        order1.takeOrder(performer1);
-        order2.takeOrder(performer2);
-        order3.takeOrder(performer3);
+        List<Order> orders = Arrays.asList(
+                new Order(customers.get(2), "Protect Sansa and Arya Stark", BigDecimal.valueOf(1000)),
+                new Order(customers.get(1), "Serve the true queen", BigDecimal.valueOf(100.25)),
+                new Order(customers.get(0), "Rule the Winterfell", BigDecimal.valueOf(100)),
+                new Order(customers.get(3), "Kill the dragons", BigDecimal.valueOf(1_000)),
+                new Order(customers.get(0), "Protect the Westeros from the Night King", BigDecimal.valueOf(500)),
+                new Order(customers.get(4), "Hold the door", BigDecimal.valueOf(500)),
+                new Order(customers.get(1), "Kill the Cersei", BigDecimal.valueOf(500)),
+                new Order(customers.get(5), "Pay off a debt to the Iron Bank of Braavos", BigDecimal.valueOf(500_000)),
+                new Order(customers.get(1), "Recover from the Greyscale", BigDecimal.valueOf(200)),
+                new Order(customers.get(1), "Recover from the Greyscale", BigDecimal.valueOf(200)),
+                new Order(customers.get(1), "Serve the true queen", BigDecimal.valueOf(100.25)),
+                new Order(customers.get(0), "Become the Meister", BigDecimal.valueOf(100)));
 
-        customerRepository.save(Arrays.asList(customer1, customer2, customer3, customer4, customer5, customer6));
-        performerRepository.save(Arrays.asList(performer1, performer2, performer3));
-        orderRepository.save(Arrays.asList(order1, order2, order3, order4, order5, order6, order7, order8, order9,
-                order10, order11));
+        orders.get(0).takeOrder(performers.get(0));
+        orders.get(1).takeOrder(performers.get(1));
+        orders.get(2).takeOrder(performers.get(2));
+
+        customerRepository.save(customers);
+        performerRepository.save(performers);
+        orderRepository.save(orders);
+
 
         List<Order> testOrders = new LinkedList<>();
-        for (int i = 0; i < 100; i++) {
-            testOrders.add(new Order(customer1, "Description for test order " + i, BigDecimal.ONE));
+        for (int i = 0; i < 256; i++) {
+            testOrders.add(new Order(customers.get(random.nextInt(customers.size())),
+                    "Description for test order " + (i + 1),
+                    BigDecimal.valueOf(random.nextInt(10) + 1)));
         }
+        for (int i = 0; i < 128; i++) {
+            testOrders.get(i).takeOrder(performers.get(random.nextInt(performers.size())));
+        }
+        for (int i = 0; i < 32; i++) {
+            testOrders.get(i).markAsReady();
+        }
+        for (int i = 0; i < 16; i++) {
+            testOrders.get(i).accept();
+        }
+
         orderRepository.save(testOrders);
     }
 }
