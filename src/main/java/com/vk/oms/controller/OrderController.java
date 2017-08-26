@@ -10,7 +10,6 @@ import com.vk.oms.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class OrderController {
      */
     @GetMapping("/orders")
     @PreAuthorize("hasRole('PERFORMER')")
-    public List<Order> getNewOrders(@PageableDefault(sort = {"createdDate"}) Pageable pageable) {
+    public List<Order> getNewOrders(Pageable pageable) {
         return orderRepository
                 .findAll((root, query, cb) -> cb.equal(root.get("status"), Order.Status.WAITING), pageable)
                 .getContent();
@@ -48,8 +47,7 @@ public class OrderController {
 
     @GetMapping("/users/{id:\\d+}/orders")
     @PreAuthorize("hasRole('CUSTOMER') and #user == loggedUser or hasRole('PERFORMER') and #user == loggedUser")
-    public List<Order> getUserOrders(@PathVariable("id") User user,
-                                     @PageableDefault(sort = {"status", "createdDate"}) Pageable pageable) {
+    public List<Order> getUserOrders(@PathVariable("id") User user, Pageable pageable) {
         assertFound(user);
         Page<Order> page = (user instanceof Customer)
                 ? orderRepository.findByCustomer((Customer) user, pageable)
@@ -124,7 +122,7 @@ public class OrderController {
         orderRepository.save(order);
     }
 
-    private class OrderDto {
+    private static class OrderDto {
         public String description;
         public BigDecimal price;
     }
