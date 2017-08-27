@@ -6,6 +6,7 @@ import com.vk.oms.model.Order;
 import com.vk.oms.model.Performer;
 import com.vk.oms.model.User;
 import com.vk.oms.repository.OrderRepository;
+import com.vk.oms.repository.UserRepository;
 import com.vk.oms.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Возвращает заказ с id, указанным в качестве path variable
@@ -107,6 +112,7 @@ public class OrderController {
      * Помечает заказ, как выполненный, изменяя статус заказа с READY на COMPLETED. Переводит оплату за заказ со счёта
      * заказчика на счёт исполнителя.
      */
+    @Transactional
     @PatchMapping("/orders/{id:\\d+}/accept")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('CUSTOMER') and #order?.customer == loggedUser")

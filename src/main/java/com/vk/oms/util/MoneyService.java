@@ -1,7 +1,6 @@
 package com.vk.oms.util;
 
 import com.vk.oms.model.User;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -12,7 +11,6 @@ public final class MoneyService {
     private MoneyService() {
     }
 
-    @Transactional
     public static void transferMoney(User from, User to, BigDecimal money) {
         BigDecimal payment = money.multiply(feePercentage).add(money); // money + 5% money
 
