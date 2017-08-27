@@ -78,10 +78,6 @@ public class DataInitializer implements CommandLineRunner {
         orders.get(1).takeOrder(performers.get(1));
         orders.get(2).takeOrder(performers.get(2));
 
-        customerRepository.save(customers);
-        performerRepository.save(performers);
-        orderRepository.save(orders);
-
 
         List<Order> testOrders = new LinkedList<>();
         for (int i = 0; i < 256; i++) {
@@ -92,13 +88,16 @@ public class DataInitializer implements CommandLineRunner {
         for (int i = 0; i < 128; i++) {
             testOrders.get(i).takeOrder(performers.get(random.nextInt(performers.size())));
         }
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 64; i++) {
             testOrders.get(i).markAsReady();
         }
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 32; i++) {
             testOrders.get(i).accept();
         }
 
+        customerRepository.save(customers);
+        performerRepository.save(performers);
         orderRepository.save(testOrders);
+        orderRepository.save(orders);
     }
 }
