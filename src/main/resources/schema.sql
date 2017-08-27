@@ -1,4 +1,4 @@
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `dtype` varchar(31) NOT NULL,
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `money` decimal(19,2) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `UK_sb8bbouer5wak8vyiiy4pf2bx` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-CREATE TABLE `order` (
+CREATE TABLE IF NOT EXISTS `order` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created_date` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
