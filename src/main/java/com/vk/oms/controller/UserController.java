@@ -22,7 +22,7 @@ public class UserController {
     @GetMapping("/authenticated")
     @PreAuthorize("isAuthenticated()")
     public User getLoggedUser() {
-        return SecurityUtils.getLoggedUser();
+        return userRepository.findOne(SecurityUtils.getLoggedUser().getId());
     }
 
     @PostMapping("/users")
