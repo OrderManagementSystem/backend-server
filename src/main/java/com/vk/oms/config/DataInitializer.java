@@ -6,11 +6,8 @@ import com.vk.oms.model.Performer;
 import com.vk.oms.repository.CustomerRepository;
 import com.vk.oms.repository.OrderRepository;
 import com.vk.oms.repository.PerformerRepository;
-import org.h2.server.web.WebServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -32,16 +29,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private OrderRepository orderRepository;
-
-    @Bean
-    ServletRegistrationBean h2ServletRegistrationBean() {
-        ServletRegistrationBean registrationBean =
-                new ServletRegistrationBean(new WebServlet());
-
-        registrationBean.addUrlMappings("/h2/*");
-
-        return registrationBean;
-    }
 
     @Override
     public void run(String... args) throws Exception {
