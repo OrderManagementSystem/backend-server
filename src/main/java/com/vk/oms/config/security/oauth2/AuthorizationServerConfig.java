@@ -39,7 +39,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("client").secret("secret")
+                .withClient("iDXnf8809V1Tjo6zgsXc").secret("R85vuXvGCarh5jQOPMgN")
                 .authorizedGrantTypes("password")
                 .authorities(Customer.class.getSimpleName(), Performer.class.getSimpleName())
                 .scopes("read", "write")
