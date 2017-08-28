@@ -6,7 +6,6 @@ import com.vk.oms.model.Order;
 import com.vk.oms.model.Performer;
 import com.vk.oms.model.User;
 import com.vk.oms.repository.OrderRepository;
-import com.vk.oms.repository.UserRepository;
 import com.vk.oms.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,18 +25,6 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    /**
-     * Возвращает заказ с id, указанным в качестве path variable
-     */
-    @GetMapping("/orders/{id:\\d+}")
-    public Order getOrder(@PathVariable("id") Order order) {
-        assertFound(order);
-        return order;
-    }
 
     /**
      * Возвращает список новых (со статусом IN_PROGRESS) заказов, отсортированный по дате добавления, от новых к старым
