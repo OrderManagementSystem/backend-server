@@ -1,7 +1,8 @@
 # Order Management System - backend
 
 ## 0. Подготовка
-Если хотите запустить сервер с уже подготовленными тестовыми данными, измените в файле `src\main\resources\application.yml` активный профиль с `production` на `development`.
+1. Если хотите запустить сервер с уже подготовленными тестовыми данными, измените в файле `src\main\resources\application.yml` активный профиль с `production` на `development`.
+2. Чтобы изменить используемую бд, исправьте `datasource` в том же файле
 
 Для сборки сервера необходимо иметь установленный [maven](https://maven.apache.org).
 
